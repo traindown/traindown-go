@@ -75,7 +75,9 @@ func TestScan(t *testing.T) {
       # Performance 3 Key: Performance 3 Value
     400.4 4f 4r 4s
       * Performance 4 Note
-      # Performance 4 Key: Performance 4 Value`)
+      # Performance 4 Key: Performance 4 Value
+
+  Another: 100`)
 
 	var tokens []*Token
 	tokens, err = lexer.Scan(text)
@@ -133,6 +135,8 @@ func TestScan(t *testing.T) {
 			3,
 			"Performance 4 Key: Performance 4 Value",
 			22, 7, 22, 46},
+		expectation{"MOVEMENT", 4, "Another", 24, 3, 24, 10},
+		expectation{"LOAD", 1, "100", 24, 12, 24, 14},
 	}
 
 	for idx, ex := range expected {
