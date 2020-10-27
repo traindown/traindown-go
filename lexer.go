@@ -81,9 +81,16 @@ func NewLexer() (Lexer, error) {
 	lexer.Add(
 		[]byte(`#[^\n|\r]*`),
 		func(scan *lexmachine.Scanner, match *machines.Match) (interface{}, error) {
+			lR := strings.Split(string(match.Bytes)[1:], ":")
+			l := strings.TrimSpace(lR[0])
+			r := strings.TrimSpace(lR[1])
+			var kvp strings.Builder
+			kvp.WriteString(l)
+			kvp.WriteString(": ")
+			kvp.WriteString(r)
 			return scan.Token(
 					TokenMap["METADATA"],
-					strings.TrimSpace(string(match.Bytes)[1:]),
+					kvp.String(),
 					match),
 				nil
 		},
