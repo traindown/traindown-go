@@ -11,7 +11,7 @@ import (
 
 // Tokens used in parsing Traindown inputs
 var Tokens = []string{
-	"DATE", "LOAD", "FAILS", "METADATA", "MOVEMENT", "NOTE", "REPS", "SETS",
+	"DATE", "LOAD", "FAILS", "METADATA", "MOVEMENT", "MOVEMENT_SS", "NOTE", "REPS", "SETS",
 }
 
 // Token holds information about a token
@@ -145,13 +145,20 @@ func NewLexer() (Lexer, error) {
 		},
 	)
 	lexer.Add(
-		[]byte(`(\w+\s?)+:`),
+		[]byte(`((\+\s*?)?\w+\s?)+:`),
 		func(scan *lexmachine.Scanner, match *machines.Match) (interface{}, error) {
-			return scan.Token(
-					TokenMap["MOVEMENT"],
-					strings.TrimSuffix(string(match.Bytes), ":"),
-					match),
-				nil
+			s := strings.TrimSuffix(string(match.Bytes), ":")
+
+			var tokType int
+			if strings.HasPrefix(s, "+") {
+				tokType = TokenMap["MOVEMENT_SS"]
+				s = strings.TrimPrefix(s, "+")
+				s = strings.TrimSpace(s)
+			} else {
+				tokType = TokenMap["MOVEMENT"]
+			}
+
+			return scan.Token(tokType, s, match), nil
 		},
 	)
 	lexer.Add(

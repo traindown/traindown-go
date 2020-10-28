@@ -77,7 +77,7 @@ func TestScan(t *testing.T) {
       * Performance 4 Note
       # Performance 4 Key: Performance 4 Value
 
-  Another: 100`)
+  + Another: 100`)
 
 	var tokens []*Token
 	tokens, err = lexer.Scan(text)
@@ -88,38 +88,38 @@ func TestScan(t *testing.T) {
 
 	expected := []expectation{
 		expectation{"DATE", 0, "2020-01-01 12:34", 2, 3, 2, 20},
-		expectation{"NOTE", 5, "Session Note 123", 4, 3, 4, 20},
+		expectation{"NOTE", 6, "Session Note 123", 4, 3, 4, 20},
 		expectation{
 			"METADATA",
 			3,
 			"Session Key 123: Session Value 123",
 			5, 3, 5, 38},
 		expectation{"MOVEMENT", 4, "Movement Name 123", 7, 3, 7, 20},
-		expectation{"NOTE", 5, "Movement Note 123", 8, 5, 8, 23},
+		expectation{"NOTE", 6, "Movement Note 123", 8, 5, 8, 23},
 		expectation{
 			"METADATA",
 			3,
 			"Movement Key 123: Movement Value 123",
 			9, 5, 9, 42},
 		expectation{"LOAD", 1, "100", 11, 5, 11, 7},
-		expectation{"NOTE", 5, "Performance 1 Note", 12, 7, 12, 26},
+		expectation{"NOTE", 6, "Performance 1 Note", 12, 7, 12, 26},
 		expectation{
 			"METADATA",
 			3,
 			"Performance 1 Key: Performance 1 Value",
 			13, 7, 13, 46},
 		expectation{"LOAD", 1, "200.2", 14, 5, 14, 9},
-		expectation{"REPS", 6, "2", 14, 11, 14, 12},
-		expectation{"NOTE", 5, "Performance 2 Note", 15, 7, 15, 26},
+		expectation{"REPS", 7, "2", 14, 11, 14, 12},
+		expectation{"NOTE", 6, "Performance 2 Note", 15, 7, 15, 26},
 		expectation{
 			"METADATA",
 			3,
 			"Performance 2 Key: Performance 2 Value",
 			16, 7, 16, 46},
 		expectation{"LOAD", 1, "300", 17, 5, 17, 7},
-		expectation{"REPS", 6, "3", 17, 9, 17, 10},
-		expectation{"SETS", 7, "3", 17, 12, 17, 13},
-		expectation{"NOTE", 5, "Performance 3 Note", 18, 7, 18, 26},
+		expectation{"REPS", 7, "3", 17, 9, 17, 10},
+		expectation{"SETS", 8, "3", 17, 12, 17, 13},
+		expectation{"NOTE", 6, "Performance 3 Note", 18, 7, 18, 26},
 		expectation{
 			"METADATA",
 			3,
@@ -127,16 +127,16 @@ func TestScan(t *testing.T) {
 			19, 7, 19, 46},
 		expectation{"LOAD", 1, "400.4", 20, 5, 20, 9},
 		expectation{"FAILS", 2, "4", 20, 11, 20, 12},
-		expectation{"REPS", 6, "4", 20, 14, 20, 15},
-		expectation{"SETS", 7, "4", 20, 17, 20, 18},
-		expectation{"NOTE", 5, "Performance 4 Note", 21, 7, 21, 26},
+		expectation{"REPS", 7, "4", 20, 14, 20, 15},
+		expectation{"SETS", 8, "4", 20, 17, 20, 18},
+		expectation{"NOTE", 6, "Performance 4 Note", 21, 7, 21, 26},
 		expectation{
 			"METADATA",
 			3,
 			"Performance 4 Key: Performance 4 Value",
 			22, 7, 22, 46},
-		expectation{"MOVEMENT", 4, "Another", 24, 3, 24, 10},
-		expectation{"LOAD", 1, "100", 24, 12, 24, 14},
+		expectation{"MOVEMENT_SS", 5, "Another", 24, 3, 24, 12},
+		expectation{"LOAD", 1, "100", 24, 14, 24, 16},
 	}
 
 	for idx, ex := range expected {
