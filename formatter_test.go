@@ -23,7 +23,7 @@ func TestFormat(t *testing.T) {
              1s
     * performance note
             # performance key:     performance value
-    another:
+    + another:
     * movement note
     # movement key: movement value
     200

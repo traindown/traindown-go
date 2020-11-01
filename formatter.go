@@ -66,10 +66,13 @@ func (f Formatter) Format(txt string) (string, error) {
 			s.WriteString(spacer(inSession, inPerformance))
 			s.WriteString("* ")
 			s.WriteString(tok.Value())
-		case "MOVEMENT":
+		case "MOVEMENT", "MOVEMENT_SS":
 			inSession = false
 			inPerformance = false
 			s.WriteString("\r\n\r\n")
+			if tok.Value() == "MOVEMENT_SS" {
+				s.WriteString("+ ")
+			}
 			s.WriteString(tok.Value())
 			s.WriteString(":")
 		case "NOTE":
