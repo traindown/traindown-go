@@ -70,3 +70,42 @@ func TestParseString(t *testing.T) {
 		t.Errorf("Failed to parse second movement")
 	}
 }
+
+func TestParseUnit(t *testing.T) {
+	texts := []string{
+		"# u: your mom\nmovement:\n100",
+		"# U: your mom\nmovement:\n100",
+		"# unit: your mom\nmovement:\n100",
+		"# Unit: your mom\nmovement:\n100",
+		"movement:\n# u: your mom\n100",
+		"movement:\n# U: your mom\n100",
+		"movement:\n# unit: your mom\n100",
+		"movement:\n# Unit: your mom\n100",
+		"movement:\n100\n# u: your mom",
+		"movement:\n100\n# U: your mom",
+		"movement:\n100\n# unit: your mom",
+		"movement:\n100\n# Unit: your mom",
+	}
+
+	for idx, text := range texts {
+
+		session, err := ParseString(text)
+
+		if err != nil {
+			t.Errorf("Failed to parse for %d: %q", idx, err)
+			continue
+		}
+
+		if len(session.Errors) != 0 {
+			t.Errorf("Errors on session for %d: %q", idx, session.Errors)
+			continue
+		}
+
+		p := session.Movements[0].Performances[0]
+		unit := p.Unit
+
+		if unit != "your mom" {
+			t.Errorf("Incorrect unit for %d: %q", idx, p)
+		}
+	}
+}

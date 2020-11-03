@@ -79,7 +79,7 @@ func NewLexer() (Lexer, error) {
 		},
 	)
 	lexer.Add(
-		[]byte(`#[^\n|\r]*`),
+		[]byte(`#[^\n|\r][a-zA-Z| |:|[0-9]+`),
 		func(scan *lexmachine.Scanner, match *machines.Match) (interface{}, error) {
 			lR := strings.Split(string(match.Bytes)[1:], ":")
 			l := strings.TrimSpace(lR[0])

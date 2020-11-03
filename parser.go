@@ -13,6 +13,24 @@ import (
 // Metadata is key value pairs.
 type Metadata map[string]interface{}
 
+type specialAssignable interface {
+	assignSpecial(string string) bool
+}
+
+func isBodyweight(u string) bool {
+	if u == "bw" || u == "BW" || u == "bodyweight" || u == "Bodyweight" || u == "BodyWeight" {
+		return true
+	}
+	return false
+}
+
+func isUnit(u string) bool {
+	if u == "u" || u == "U" || u == "unit" || u == "Unit" {
+		return true
+	}
+	return false
+}
+
 // Performance is an expression of a movement.
 type Performance struct {
 	Fails        int     `json:"fails"`
@@ -34,6 +52,7 @@ func NewPerformance() *Performance {
 		Notes:    make([]string, 0),
 		Reps:     1,
 		Sets:     1,
+		Unit:     "unknown unit",
 	}
 }
 
@@ -42,11 +61,35 @@ func (p Performance) String() string {
 	return string(ps)
 }
 
+func (p *Performance) assignSpecial(k string, v string) bool {
+	if isBodyweight(k) {
+		p.Unit = "bodyweight"
+		return true
+	} else if isUnit(k) {
+		p.Unit = v
+		return true
+	}
+	return false
+}
+
+func (p *Performance) maybeInheritUnit(s *Session, m *Movement) {
+	if p.Unit == "unknown unit" {
+		if s.DefaultUnit != "" {
+			p.Unit = s.DefaultUnit
+		}
+
+		if m.DefaultUnit != "" {
+			p.Unit = m.DefaultUnit
+		}
+	}
+}
+
 // Movement is an thing you do, you know?
 type Movement struct {
-	Name     string `json:"name"`
-	Sequence int    `json:"sequence"`
-	SuperSet bool   `json:"superSet"`
+	DefaultUnit string `json:"defaultUnit,omitempty"`
+	Name        string `json:"name"`
+	Sequence    int    `json:"sequence"`
+	SuperSet    bool   `json:"superSet"`
 
 	Performances []*Performance `json:"performances"`
 
@@ -63,11 +106,28 @@ func NewMovement() *Movement {
 	}
 }
 
+func (m Movement) String() string {
+	ms, _ := json.Marshal(m)
+	return string(ms)
+}
+
+func (m *Movement) assignSpecial(k string, v string) bool {
+	if isBodyweight(k) {
+		m.DefaultUnit = "bodyweight"
+		return true
+	} else if isUnit(k) {
+		m.DefaultUnit = v
+		return true
+	}
+	return false
+}
+
 // Session is a collection of Movements that occurred.
 type Session struct {
-	Date      time.Time   `json:"date"`
-	Errors    []error     `json:"errors"`
-	Movements []*Movement `json:"movements"`
+	Date        time.Time   `json:"date"`
+	DefaultUnit string      `json:"defaultUnit,omitempty"`
+	Errors      []error     `json:"errors"`
+	Movements   []*Movement `json:"movements"`
 
 	Metadata Metadata `json:"metadata"`
 	Notes    []string `json:"notes"`
@@ -80,6 +140,17 @@ func NewSession() *Session {
 		Movements: make([]*Movement, 0),
 		Notes:     make([]string, 0),
 	}
+}
+
+func (s *Session) assignSpecial(k string, v string) bool {
+	if isBodyweight(k) {
+		s.DefaultUnit = "bodyweight"
+		return true
+	} else if isUnit(k) {
+		s.DefaultUnit = v
+		return true
+	}
+	return false
 }
 
 // ParseByte takes in a Traindown byte slice and returns a pointer to a Session.
@@ -177,6 +248,7 @@ func parse(tokens []*Token) (*Session, error) {
 			p.Fails = i
 		case "LOAD":
 			if inPerformance {
+				p.maybeInheritUnit(s, m)
 				m.Performances = append(m.Performances, p)
 				p = NewPerformance()
 			}
@@ -194,16 +266,23 @@ func parse(tokens []*Token) (*Session, error) {
 			value := strings.Trim(pair[1], " ")
 
 			if inSession {
-				s.Metadata[key] = value
+				if !s.assignSpecial(key, value) {
+					s.Metadata[key] = value
+				}
 			} else if inPerformance {
-				p.Metadata[key] = value
+				if !p.assignSpecial(key, value) {
+					p.Metadata[key] = value
+				}
 			} else {
-				m.Metadata[key] = value
+				if !m.assignSpecial(key, value) {
+					m.Metadata[key] = value
+				}
 			}
 		case "MOVEMENT", "MOVEMENT_SS":
 			inSession = false
 
 			if inPerformance {
+				p.maybeInheritUnit(s, m)
 				m.Performances = append(m.Performances, p)
 				p = NewPerformance()
 			}
@@ -247,6 +326,7 @@ func parse(tokens []*Token) (*Session, error) {
 	}
 
 	if p.Load != 0.0 {
+		p.maybeInheritUnit(s, m)
 		m.Performances = append(m.Performances, p)
 	}
 
