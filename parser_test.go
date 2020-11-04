@@ -41,8 +41,10 @@ func parseCheck(t *testing.T, b []byte, s string) {
 	m2Meta := Metadata{"movement key": "movement value"}
 
 	if m1.Name != "movement" ||
+		m1.Sequence != 0 ||
 		len(m1p) != 1 ||
 		fmt.Sprint(m1p0.Metadata) != fmt.Sprint(m1p0Meta) ||
+		m1p0.Sequence != 0 ||
 		len(m1p0.Notes) != 1 ||
 		m1p0.Notes[0] != "performance note" ||
 		m1p0.Load != 100 ||
@@ -54,15 +56,18 @@ func parseCheck(t *testing.T, b []byte, s string) {
 	}
 
 	if m2.Name != "another" ||
+		m2.Sequence != 1 ||
 		m2.SuperSet != true ||
 		len(m2p) != 2 ||
 		fmt.Sprint(m2.Metadata) != fmt.Sprint(m2Meta) ||
 		len(m2.Notes) != 1 ||
 		m2.Notes[0] != "movement note" ||
+		m2p0.Sequence != 0 ||
 		m2p0.Load != 200.1 ||
 		m2p0.Reps != 1 ||
 		m2p0.Sets != 1 ||
 		m2p0.Unit != "session" ||
+		m2p1.Sequence != 1 ||
 		m2p1.Load != 200.2 ||
 		m2p1.Reps != 1 ||
 		m2p1.Sets != 2 ||

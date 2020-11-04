@@ -210,6 +210,8 @@ func parse(tokens []*Token) (*Session, error) {
 
 	inSession := true
 	inPerformance := false
+	mSeq := 0
+	pSeq := 0
 
 	for _, tok := range tokens {
 		switch tok.Name() {
@@ -232,9 +234,11 @@ func parse(tokens []*Token) (*Session, error) {
 			p.Fails = i
 		case "LOAD":
 			if inPerformance {
+				p.Sequence = pSeq
 				p.maybeInheritUnit(s, m)
 				m.Performances = append(m.Performances, p)
 				p = NewPerformance()
+				pSeq++
 			}
 			f, err := floatValue(tok.Value(), "load")
 
@@ -266,15 +270,20 @@ func parse(tokens []*Token) (*Session, error) {
 			inSession = false
 
 			if inPerformance {
+				p.Sequence = pSeq
 				p.maybeInheritUnit(s, m)
 				m.Performances = append(m.Performances, p)
 				p = NewPerformance()
+				pSeq++
 			}
 			inPerformance = false
 
 			if m.Name != "" {
+				m.Sequence = mSeq
 				s.Movements = append(s.Movements, m)
 				m = NewMovement()
+				mSeq++
+				pSeq = 0
 			}
 
 			m.Name = tok.Value()
@@ -310,11 +319,13 @@ func parse(tokens []*Token) (*Session, error) {
 	}
 
 	if p.Load != 0.0 {
+		p.Sequence = pSeq
 		p.maybeInheritUnit(s, m)
 		m.Performances = append(m.Performances, p)
 	}
 
 	if m.Name != "" {
+		m.Sequence = mSeq
 		s.Movements = append(s.Movements, m)
 	}
 
