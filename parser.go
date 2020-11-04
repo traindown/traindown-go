@@ -17,13 +17,6 @@ type specialAssignable interface {
 	assignSpecial(string string) bool
 }
 
-func isBodyweight(u string) bool {
-	if u == "bw" || u == "BW" || u == "bodyweight" || u == "Bodyweight" || u == "BodyWeight" {
-		return true
-	}
-	return false
-}
-
 func isUnit(u string) bool {
 	if u == "u" || u == "U" || u == "unit" || u == "Unit" {
 		return true
@@ -62,10 +55,7 @@ func (p Performance) String() string {
 }
 
 func (p *Performance) assignSpecial(k string, v string) bool {
-	if isBodyweight(k) {
-		p.Unit = "bodyweight"
-		return true
-	} else if isUnit(k) {
+	if isUnit(k) {
 		p.Unit = v
 		return true
 	}
@@ -112,10 +102,7 @@ func (m Movement) String() string {
 }
 
 func (m *Movement) assignSpecial(k string, v string) bool {
-	if isBodyweight(k) {
-		m.DefaultUnit = "bodyweight"
-		return true
-	} else if isUnit(k) {
+	if isUnit(k) {
 		m.DefaultUnit = v
 		return true
 	}
@@ -143,10 +130,7 @@ func NewSession() *Session {
 }
 
 func (s *Session) assignSpecial(k string, v string) bool {
-	if isBodyweight(k) {
-		s.DefaultUnit = "bodyweight"
-		return true
-	} else if isUnit(k) {
+	if isUnit(k) {
 		s.DefaultUnit = v
 		return true
 	}

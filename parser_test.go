@@ -6,22 +6,15 @@ import (
 	"time"
 )
 
-func TestParseString(t *testing.T) {
-	text := `
-    @ 1/1/20 1:23
-    # key: value
+func parseCheck(t *testing.T, b []byte, s string) {
+	var session *Session
+	var err error
 
-    movement:
-      100 1r 1f 1s
-        * performance note
-        # performance key: performance value
-
-    + another:
-      * movement note
-      # movement key: movement value
-      200.2 2s`
-
-	session, err := ParseString(text)
+	if s == "" {
+		session, err = ParseByte(b)
+	} else {
+		session, err = ParseString(s)
+	}
 
 	if err != nil {
 		t.Errorf("Failed to parse: %q", err)
@@ -42,6 +35,7 @@ func TestParseString(t *testing.T) {
 	m2 := session.Movements[1]
 	m2p := m2.Performances
 	m2p0 := m2.Performances[0]
+	m2p1 := m2.Performances[1]
 
 	m1p0Meta := Metadata{"performance key": "performance value"}
 	m2Meta := Metadata{"movement key": "movement value"}
@@ -54,21 +48,49 @@ func TestParseString(t *testing.T) {
 		m1p0.Load != 100 ||
 		m1p0.Fails != 1 ||
 		m1p0.Reps != 1 ||
-		m1p0.Sets != 1 {
+		m1p0.Sets != 1 ||
+		m1p0.Unit != "movement" {
 		t.Errorf("Failed to parse first movement")
 	}
 
 	if m2.Name != "another" ||
 		m2.SuperSet != true ||
-		len(m2p) != 1 ||
+		len(m2p) != 2 ||
 		fmt.Sprint(m2.Metadata) != fmt.Sprint(m2Meta) ||
 		len(m2.Notes) != 1 ||
 		m2.Notes[0] != "movement note" ||
-		m2p0.Load != 200.2 ||
+		m2p0.Load != 200.1 ||
 		m2p0.Reps != 1 ||
-		m2p0.Sets != 2 {
+		m2p0.Sets != 1 ||
+		m2p0.Unit != "session" ||
+		m2p1.Load != 200.2 ||
+		m2p1.Reps != 1 ||
+		m2p1.Sets != 2 ||
+		m2p1.Unit != "performance" {
 		t.Errorf("Failed to parse second movement")
 	}
+}
+
+func TestParse(t *testing.T) {
+	text := `
+    @ 1/1/20 1:23
+    # key: value
+    # unit: session
+
+    movement:
+      # unit: movement
+      100 1r 1f 1s
+        * performance note
+        # performance key: performance value
+
+    + another:
+      * movement note
+      # movement key: movement value
+      200.1
+      200.2 2s
+        # unit: performance`
+	parseCheck(t, []byte(""), text)
+	parseCheck(t, []byte(text), "")
 }
 
 func TestParseUnit(t *testing.T) {
