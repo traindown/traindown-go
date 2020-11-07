@@ -56,7 +56,7 @@ func (p Performance) String() string {
 
 // Volume produces a float and a string containing the unit.
 func (p Performance) Volume() (float32, string) {
-	v := (reps - fails) * sets * load
+	v := (float32(p.Reps) - float32(p.Fails)) * float32(p.Sets) * p.Load
 	return v, p.Unit
 }
 
