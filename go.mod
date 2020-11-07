@@ -1,4 +1,4 @@
-module traindown
+module github.com/traindown/traindown-go
 
 go 1.14
 
