@@ -54,6 +54,12 @@ func (p Performance) String() string {
 	return string(ps)
 }
 
+// Volume produces a float and a string containing the unit.
+func (p Performance) Volume() (float32, string) {
+	v := (reps - fails) * sets * load
+	return v, p.Unit
+}
+
 func (p *Performance) assignSpecial(k string, v string) bool {
 	if isUnit(k) {
 		p.Unit = v
