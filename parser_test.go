@@ -25,7 +25,7 @@ func parseCheck(t *testing.T, b []byte, s string) {
 	}
 
 	if session.Date != time.Date(2020, 1, 1, 1, 23, 0, 0, time.UTC) {
-		t.Errorf("Failed to parse date")
+		t.Fatal("Failed to parse date")
 	}
 
 	m1 := session.Movements[0]

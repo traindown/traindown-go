@@ -2,7 +2,6 @@ package traindown
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/timtadh/lexmachine"
@@ -188,15 +187,12 @@ func (lexer Lexer) Scan(text []byte) ([]*Token, error) {
 
 	for tok, err, eof := scanner.Next(); !eof; tok, err, eof = scanner.Next() {
 
-		if ui, is := err.(*machines.UnconsumedInput); ui != nil && is {
-			scanner.TC = ui.FailTC
-			log.Printf("skipping %v", ui)
-		} else if err != nil {
+		if err != nil {
 			return tokens, err
-		} else {
-			token := &Token{tok.(*lexmachine.Token)}
-			tokens = append(tokens, token)
 		}
+
+		token := &Token{tok.(*lexmachine.Token)}
+		tokens = append(tokens, token)
 	}
 
 	return tokens, nil

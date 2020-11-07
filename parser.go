@@ -139,22 +139,10 @@ func (s *Session) assignSpecial(k string, v string) bool {
 
 // ParseByte takes in a Traindown byte slice and returns a pointer to a Session.
 func ParseByte(txt []byte) (*Session, error) {
-	lexer, err := NewLexer()
+	s, err := parse("", txt)
 
 	if err != nil {
 		return &Session{}, err
-	}
-
-	tokens, err := lexer.Scan(txt)
-
-	if err != nil {
-		return &Session{}, fmt.Errorf("Failed to parse: %q", err)
-	}
-
-	s, err := parse(tokens)
-
-	if err != nil {
-		return &Session{}, fmt.Errorf("Failed to parse: %q", err)
 	}
 
 	return s, nil
@@ -162,22 +150,10 @@ func ParseByte(txt []byte) (*Session, error) {
 
 // ParseString takes in a Traindown string and returns a pointer to a Session.
 func ParseString(txt string) (*Session, error) {
-	lexer, err := NewLexer()
+	s, err := parse(txt, []byte(""))
 
 	if err != nil {
 		return &Session{}, err
-	}
-
-	tokens, err := lexer.Scan([]byte(txt))
-
-	if err != nil {
-		return &Session{}, fmt.Errorf("Failed to parse: %q", err)
-	}
-
-	s, err := parse(tokens)
-
-	if err != nil {
-		return &Session{}, fmt.Errorf("Failed to parse: %q", err)
 	}
 
 	return s, nil
@@ -203,11 +179,28 @@ func intValue(s string, t string) (int, error) {
 	return i, nil
 }
 
-func parse(tokens []*Token) (*Session, error) {
-	m := NewMovement()
-	p := NewPerformance()
+func parse(str string, b []byte) (*Session, error) {
 	s := NewSession()
 
+	lexer, err := NewLexer()
+
+	if err != nil {
+		return s, err
+	}
+
+	var tokens []*Token
+	if str != "" {
+		tokens, err = lexer.Scan([]byte(str))
+	} else {
+		tokens, err = lexer.Scan(b)
+	}
+
+	if err != nil {
+		return s, err
+	}
+
+	m := NewMovement()
+	p := NewPerformance()
 	inSession := true
 	inPerformance := false
 	mSeq := 0
