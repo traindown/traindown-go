@@ -18,6 +18,8 @@ type Performance struct {
 	Notes    []string `json:"notes"`
 }
 
+/* Public */
+
 // NewPerformance spits out a new Performance
 func NewPerformance() *Performance {
 	return &Performance{
@@ -39,6 +41,8 @@ func (p Performance) Volume() (float32, string) {
 	v := (float32(p.Reps) - float32(p.Fails)) * float32(p.Sets) * p.Load
 	return v, p.Unit
 }
+
+/* Private */
 
 func (p *Performance) assignSpecial(k string, v string) bool {
 	if isUnit(k) {

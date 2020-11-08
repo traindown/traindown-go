@@ -24,6 +24,25 @@ func TestStringifyMovement(t *testing.T) {
 	}
 }
 
+func TestVolumesForMovement(t *testing.T) {
+	m := NewMovement()
+	p1 := &Performance{Unit: "your", Load: 100.0, Reps: 10, Sets: 1}
+	p2 := &Performance{Unit: "mom", Load: 500.0, Reps: 1, Sets: 2}
+	m.Performances = []*Performance{p1, p2}
+
+	volumes := m.Volumes()
+
+	your, ok := volumes["your"]
+	if !ok || your != 1000.0 {
+		t.Errorf("Failed to compute 'your'. Expected 1000.0. Got %v", your)
+	}
+
+	mom, ok := volumes["mom"]
+	if !ok || mom != 1000.0 {
+		t.Errorf("Failed to compute 'mom'. Expected 1000.0. Got %v", your)
+	}
+}
+
 func TestAssignSpecialToMovement(t *testing.T) {
 	m := NewMovement()
 

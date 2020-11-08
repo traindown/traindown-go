@@ -16,6 +16,8 @@ type Session struct {
 	Notes    []string `json:"notes"`
 }
 
+/* Public */
+
 // NewSession spits out a new Session
 func NewSession() *Session {
 	return &Session{
@@ -29,6 +31,27 @@ func (s Session) String() string {
 	ss, _ := json.Marshal(s)
 	return string(ss)
 }
+
+// Volumes computes the volume performed by unit.
+func (s Session) Volumes() map[string]float32 {
+	v := make(map[string]float32)
+
+	for _, m := range s.Movements {
+		mvs := m.Volumes()
+		for mu, mv := range mvs {
+			val, ok := v[mu]
+			if ok {
+				v[mu] = val + mv
+			} else {
+				v[mu] = mv
+			}
+		}
+	}
+
+	return v
+}
+
+/* Private */
 
 func (s *Session) assignSpecial(k string, v string) bool {
 	if isUnit(k) {
