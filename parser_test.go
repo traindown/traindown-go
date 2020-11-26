@@ -2,6 +2,7 @@ package traindown
 
 import (
 	"fmt"
+	"io/ioutil"
 	"testing"
 	"time"
 )
@@ -96,6 +97,19 @@ func TestParse(t *testing.T) {
         # unit: performance`
 	parseCheck(t, []byte(""), text)
 	parseCheck(t, []byte(text), "")
+}
+
+func TestParseFile(t *testing.T) {
+	text, err := ioutil.ReadFile("./testdata")
+
+	if err != nil {
+		t.Errorf("Failed to read file: %v", err)
+	}
+
+	fmt.Println(text)
+
+	parseCheck(t, text, "")
+	parseCheck(t, []byte(""), string(text))
 }
 
 func TestParseUnit(t *testing.T) {

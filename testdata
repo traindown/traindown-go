@@ -1,0 +1,17 @@
+@ 1/1/20 1:23
+
+# key: value
+# unit: session
+
+movement:
+  # unit: movement
+  100 1r 1f 1s
+    * performance note
+    # performance key: performance value
+
++ another:
+  * movement note
+  # movement key: movement value
+  200.1
+  200.2 2s
+    # unit: performance
