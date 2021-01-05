@@ -1,0 +1,12 @@
+@ % 1:1
+
+Squat: 90 2r
+
+@ % 1:2
+
+Squat: 65 8r 3s
+
+@ % 1:3
+
+Front Squat: 90 2r
+  # Type: 3 second pause
