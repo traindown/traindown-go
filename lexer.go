@@ -78,7 +78,7 @@ func NewLexer() (Lexer, error) {
 		},
 	)
 	lexer.Add(
-		[]byte(`#[^\n|\r][a-zA-Z| |:|[0-9]+`),
+		[]byte(`#[^+@:#*\n]+:[^+@:#*\n]*`),
 		func(scan *lexmachine.Scanner, match *machines.Match) (interface{}, error) {
 			lR := strings.Split(string(match.Bytes)[1:], ":")
 			l := strings.TrimSpace(lR[0])
@@ -144,7 +144,7 @@ func NewLexer() (Lexer, error) {
 		},
 	)
 	lexer.Add(
-		[]byte(`((\+\s*?)?\w+\s?)+:`),
+		[]byte(`(\+\s*)?([^+@:#*\n ]\s?)+:`),
 		func(scan *lexmachine.Scanner, match *machines.Match) (interface{}, error) {
 			s := strings.TrimSuffix(string(match.Bytes), ":")
 
