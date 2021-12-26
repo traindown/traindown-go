@@ -1,4 +1,4 @@
-module github.com/traindown/traindown-go
+module github.com/OliverCardoza/traindown-go
 
 go 1.14
 
