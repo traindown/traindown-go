@@ -180,48 +180,6 @@ Pull ups: 0 5r 5s
 	m2.Performances = []*Performance{m2p1}
 	expectedSession.Movements = []*Movement{m1, m2}
 
-	// expectedSession := &Session{
-	// 	Date:     time.Date(2022, 1, 8, 0, 0, 0, 0, time.UTC),
-	// 	Metadata: Metadata{},
-	// 	Notes:    []string{},
-	// 	Movements: []*Movement{
-	// 		&Movement{
-	// 			Name:     "Tricep dips",
-	// 			Sequence: 0,
-	// 			SuperSet: false,
-	// 			Metadata: Metadata{},
-	// 			Notes:    []string{},
-	// 			Performances: []*Performance{
-	// 				&Performance{
-	// 					Load:     0,
-	// 					Reps:     8,
-	// 					Sets:     3,
-	// 					Unit:     "unknown unit",
-	// 					Metadata: Metadata{},
-	// 					Notes:    []string{},
-	// 				},
-	// 			},
-	// 		},
-	// 		&Movement{
-	// 			Name:     "Pull ups",
-	// 			Sequence: 1,
-	// 			SuperSet: false,
-	// 			Metadata: Metadata{},
-	// 			Notes:    []string{},
-	// 			Performances: []*Performance{
-	// 				&Performance{
-	// 					Load:     0,
-	// 					Reps:     5,
-	// 					Sets:     5,
-	// 					Unit:     "unknown unit",
-	// 					Metadata: Metadata{},
-	// 					Notes:    []string{},
-	// 				},
-	// 			},
-	// 		},
-	// 	},
-	// }
-
 	session, err := ParseString(text)
 	if err != nil {
 		t.Errorf("Failed to parse session: %q", err)
@@ -229,7 +187,4 @@ Pull ups: 0 5r 5s
 	if diff := cmp.Diff(expectedSession, session); diff != "" {
 		t.Errorf("ParseString() mismatch (-want, +got):\n%s", diff)
 	}
-	// if !reflect.DeepEqual(expectedSession, session) {
-	// 	t.Errorf("Session parsing incorrect:\n\tGot: %v\n\tWanted: %v", session, expectedSession)
-	// }
 }
