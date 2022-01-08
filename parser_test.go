@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func parseCheck(t *testing.T, b []byte, s string) {
@@ -149,4 +151,85 @@ func TestParseUnit(t *testing.T) {
 			t.Errorf("Incorrect unit for %d: %q", idx, p)
 		}
 	}
+}
+
+func TestParseZeroLoad(t *testing.T) {
+	text := `@2022-01-08
+
+Tricep dips: 0 8r 3s
+
+Pull ups: 0 5r 5s
+`
+	expectedSession := NewSession()
+	expectedSession.Date = time.Date(2022, 1, 8, 0, 0, 0, 0, time.UTC)
+	m1 := NewMovement()
+	m1.Name = "Tricep dips"
+	m1.Sequence = 0
+	m1p1 := NewPerformance()
+	m1p1.Load = 0
+	m1p1.Reps = 8
+	m1p1.Sets = 3
+	m1.Performances = []*Performance{m1p1}
+	m2 := NewMovement()
+	m2.Name = "Pull ups"
+	m2.Sequence = 1
+	m2p1 := NewPerformance()
+	m2p1.Load = 0
+	m2p1.Reps = 5
+	m2p1.Sets = 5
+	m2.Performances = []*Performance{m2p1}
+	expectedSession.Movements = []*Movement{m1, m2}
+
+	// expectedSession := &Session{
+	// 	Date:     time.Date(2022, 1, 8, 0, 0, 0, 0, time.UTC),
+	// 	Metadata: Metadata{},
+	// 	Notes:    []string{},
+	// 	Movements: []*Movement{
+	// 		&Movement{
+	// 			Name:     "Tricep dips",
+	// 			Sequence: 0,
+	// 			SuperSet: false,
+	// 			Metadata: Metadata{},
+	// 			Notes:    []string{},
+	// 			Performances: []*Performance{
+	// 				&Performance{
+	// 					Load:     0,
+	// 					Reps:     8,
+	// 					Sets:     3,
+	// 					Unit:     "unknown unit",
+	// 					Metadata: Metadata{},
+	// 					Notes:    []string{},
+	// 				},
+	// 			},
+	// 		},
+	// 		&Movement{
+	// 			Name:     "Pull ups",
+	// 			Sequence: 1,
+	// 			SuperSet: false,
+	// 			Metadata: Metadata{},
+	// 			Notes:    []string{},
+	// 			Performances: []*Performance{
+	// 				&Performance{
+	// 					Load:     0,
+	// 					Reps:     5,
+	// 					Sets:     5,
+	// 					Unit:     "unknown unit",
+	// 					Metadata: Metadata{},
+	// 					Notes:    []string{},
+	// 				},
+	// 			},
+	// 		},
+	// 	},
+	// }
+
+	session, err := ParseString(text)
+	if err != nil {
+		t.Errorf("Failed to parse session: %q", err)
+	}
+	if diff := cmp.Diff(expectedSession, session); diff != "" {
+		t.Errorf("ParseString() mismatch (-want, +got):\n%s", diff)
+	}
+	// if !reflect.DeepEqual(expectedSession, session) {
+	// 	t.Errorf("Session parsing incorrect:\n\tGot: %v\n\tWanted: %v", session, expectedSession)
+	// }
 }

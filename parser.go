@@ -2,6 +2,7 @@ package traindown
 
 import (
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -183,7 +184,7 @@ func parse(str string, b []byte) (*Session, error) {
 		}
 	}
 
-	if p.Load != 0.0 {
+	if !reflect.DeepEqual(p, NewPerformance()) {
 		p.Sequence = pSeq
 		p.maybeInheritUnit(s, m)
 		m.Performances = append(m.Performances, p)
